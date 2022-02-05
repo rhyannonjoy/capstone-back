@@ -22,19 +22,14 @@ def create_app():
     from app.models.question import Question
     
    
-
     # Setup DB
     db.init_app(app)
     migrate.init_app(app, db)
     
 
     # Register Blueprints here
-    from .routes import boards_bp
-    app.register_blueprint(boards_bp)
-
-    from .routes import cards_bp
-    app.register_blueprint(cards_bp)
-
+    from .routes import questions_bp
+    app.register_blueprint(questions_bp)
 
     #CORS(app)
     return app
