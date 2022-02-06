@@ -28,6 +28,37 @@ def get_questions():
         return jsonify(unedited_question_response), 200
 
 
+@questions_bp("", methods=["POST"])
+def post_question():
+    if request.method == "POST":
+        request_body = request.get_json()
+
+        if "unedited_question" not in request_body or "date" not in \
+            request_body or "topic" not in request_body:
+            return jsonify(details="Invalid data."), 400
+
+        new_question = Question(
+            unedited_question=request_body["unedited_question"],
+            date=request_body["date"],
+            topic=request_body["topic"]
+            )
+
+        db.session.add(new_question)
+        db.session.commit()
+
+        return {
+            "question": {
+                "id": new_question.question_id,
+                "unedited_question": new_question.unedited_question,
+                "edited_question": new_question.edited_question,
+                "answer": new_question.answer,
+                "date": new_question.date,
+                "keywords": new_question.keywords,
+                "topic": new_question.topic,
+                "research": new_question.research
+            }
+        }, 201
+
 #     if request.method == "GET":
 #         boards = Question.query.all()
 #         boards_response = []
