@@ -12,10 +12,11 @@ def get_questions():
     if request.method == "GET":
         request_body = request.get_json()
         sort_query = request.args.get("sort")
-        # if "unedited_question" not in request_body or request_body["unedited_question"] == "":
-        #     return jsonify(details="Invalid request, a question is required."), 400
-        # if "topic" not in request_body or request_body["topic"] == "":
-        #     return jsonify(details="Invalid request, a question topic is required."), 400
+
+        if "unedited_question" not in request_body or request_body["unedited_question"] == "":
+            return jsonify(details="Invalid request, a question is required."), 400
+        if "topic" not in request_body or request_body["topic"] == "":
+            return jsonify(details="Invalid request, a question topic is required."), 400
 
         if sort_query == "desc":
             unedited_question = Question.query.order_by(Question.unedited_question.desc())
@@ -71,12 +72,12 @@ def post_question():
 #         return jsonify(boards_response), 200
 
 
-# @questions_bp.route("/<id>", methods=["DELETE"]) 
-# def handle_question(id):
-#     question = Question.query.get(id)
-#     if request.method == "DELETE":
-#         db.session.delete(question)
-#         db.session.commit()
-#         return make_response(f"Board #{id} successfully deleted")
-
-
+@questions_bp.route("/<id>", methods=["DELETE"]) 
+def delete_question(id):
+    question = Question.query.get(id)
+    if request.method == "DELETE":
+        db.session.delete(question)
+        db.session.commit()
+        return jsonify({
+            "details": f'Goal {question.question_id} "{question.topic}" successfully deleted'
+            }), 200
