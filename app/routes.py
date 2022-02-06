@@ -1,47 +1,51 @@
-from flask import Blueprint, request, jsonify, make_response
 from app import db
 from app.models.question import Question
+from datetime import datetime 
+from flask import Blueprint, request, jsonify, make_response
+import os
+import requests
 
+questions_bp = Blueprint("questions", __name__, url_prefix=("/questions" ))
 
-questions_bp = Blueprint("questions", __name__, url_prefix="/questions")
-
-
-@questions_bp.route("", methods=["GET", "POST"])
-def handle_questions():
-    if request.method == "POST":
-        request_body = request.get_json()
-        if "title" not in request_body or  request_body["title"] == "":
-            return jsonify(details="Invalid request, a title is required."), 400
-        if "owner" not in request_body or request_body["owner"] == "":
-            return jsonify(details="Invalid request, an owner is required."), 400
-
-        new_board = Question(title=request_body["title"], owner=request_body["owner"])
-
-
-
-        db.session.add(new_board)
-        db.session.commit()
-
-        return jsonify({"board":{"board_id": new_board.id, "owner": new_board.owner, "title": new_board.title}}), 201
-
+@questions_bp.route("", methods=["GET"])
+def get_questions():
     if request.method == "GET":
-        boards = Question.query.all()
-        boards_response = []
-        for board in boards:
-            boards_response.append({
-                "id" : board.id,
-                "title" : board.title,
-                "owner" : board.owner
-            })
-        return jsonify(boards_response), 200
+        request_body = request.get_json()
+        sort_query = request.args.get("sort")
+        # if "unedited_question" not in request_body or request_body["unedited_question"] == "":
+        #     return jsonify(details="Invalid request, a question is required."), 400
+        # if "topic" not in request_body or request_body["topic"] == "":
+        #     return jsonify(details="Invalid request, a question topic is required."), 400
+
+        if sort_query == "desc":
+            unedited_question = Question.query.order_by(Question.unedited_question.desc())
+        elif sort_query == "asc":
+            unedited_question = Question.query.order_by(Question.unedited_question.asc())
+        else:
+            unedited_question = Question.query.all()
+
+        unedited_question_response = [unedited_question.tojson() for unedited_question in unedited_question]
+        return jsonify(unedited_question_response), 200
 
 
-@questions_bp.route("/<id>", methods=["DELETE"]) 
-def handle_question(id):
-    question = Question.query.get(id)
-    if request.method == "DELETE":
-        db.session.delete(question)
-        db.session.commit()
-        return make_response(f"Board #{id} successfully deleted")
+#     if request.method == "GET":
+#         boards = Question.query.all()
+#         boards_response = []
+#         for board in boards:
+#             boards_response.append({
+#                 "id" : board.id,
+#                 "title" : board.title,
+#                 "owner" : board.owner
+#             })
+#         return jsonify(boards_response), 200
+
+
+# @questions_bp.route("/<id>", methods=["DELETE"]) 
+# def handle_question(id):
+#     question = Question.query.get(id)
+#     if request.method == "DELETE":
+#         db.session.delete(question)
+#         db.session.commit()
+#         return make_response(f"Board #{id} successfully deleted")
 
 

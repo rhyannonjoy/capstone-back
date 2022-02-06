@@ -1,4 +1,5 @@
 from app import db
+from flask import current_app
 
 class Question(db.Model):
     question_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
