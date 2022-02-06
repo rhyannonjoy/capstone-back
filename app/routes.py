@@ -1,11 +1,10 @@
 from app import db
 from app.models.question import Question
-from datetime import datetime 
 from flask import Blueprint, request, jsonify, make_response
-import os
-import requests
+
 
 questions_bp = Blueprint("questions", __name__, url_prefix=("/questions" ))
+
 
 @questions_bp.route("", methods=["GET"])
 def get_questions():
@@ -60,24 +59,42 @@ def post_question():
             }
         }, 201
 
-#     if request.method == "GET":
-#         boards = Question.query.all()
-#         boards_response = []
-#         for board in boards:
-#             boards_response.append({
-#                 "id" : board.id,
-#                 "title" : board.title,
-#                 "owner" : board.owner
-#             })
-#         return jsonify(boards_response), 200
 
+@questions_bp.route("/<question_id", methods=["GET", "PUT", "DELETE"])
+def handle_question_id(question_id):
+    question = Question.query.get(question_id)
+    if question == None:
+        return (""), 404
 
-@questions_bp.route("/<id>", methods=["DELETE"]) 
-def delete_question(id):
-    question = Question.query.get(id)
-    if request.method == "DELETE":
+    if request.method == "GET":
+        return {
+            "question": {
+                "id": question.question_id,
+                "unedited_question": question.unedited_question,
+                "edited_question": question.edited_question,
+                "answer": question.answer,
+                "date": question.date,
+                "keywords": question.keywords,
+                "topic": question.topic,
+                "research": question.research
+            }}, 200
+
+    if request.method == "PUT":
+        form_data = request.get_json()
+
+        question.topic = form_data["topic"]
+        db.session.commit()
+
+        return {
+            "question": {
+                "id": question.question_id,
+                "topic": question.topic
+            }}, 200
+
+    elif request.method == "DELETE":
         db.session.delete(question)
         db.session.commit()
+
         return jsonify({
-            "details": f'Goal {question.question_id} "{question.topic}" successfully deleted'
+            "details": f'Question {question.question_id} "{question.topic}" successfully deleted'
             }), 200
