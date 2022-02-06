@@ -28,7 +28,7 @@ def get_questions():
         return jsonify(unedited_question_response), 200
 
 
-@questions_bp("", methods=["POST"])
+@questions_bp.route("", methods=["POST"])
 def post_question():
     if request.method == "POST":
         request_body = request.get_json()
@@ -60,7 +60,7 @@ def post_question():
         }, 201
 
 
-@questions_bp.route("/<question_id", methods=["GET", "PUT", "DELETE"])
+@questions_bp.route("/<question_id>", methods=["GET", "PUT", "DELETE"])
 def handle_question_id(question_id):
     question = Question.query.get(question_id)
     if question == None:
