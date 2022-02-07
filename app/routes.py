@@ -18,7 +18,7 @@ def get_questions():
         else:
             unedited_question = Question.query.all()
 
-        unedited_question_response = [unedited_question.tojson() for unedited_question in unedited_question]
+        unedited_question_response = [unedited_question.to_json() for unedited_question in unedited_question]
         return jsonify(unedited_question_response), 200
 
 
@@ -36,8 +36,12 @@ def post_question():
 
         new_question = Question(
             unedited_question=request_body["unedited_question"],
+            edited_question=request_body["edited_question"],
+            answer=request_body["answer"],
             date=request_body["date"],
-            topic=request_body["topic"]
+            keywords=request_body["keywords"],
+            topic=request_body["topic"],
+            research=request_body["research"]
             )
 
         db.session.add(new_question)
@@ -79,13 +83,25 @@ def handle_question_id(question_id):
     if request.method == "PUT":
         form_data = request.get_json()
 
-        question.topic = form_data["topic"]
+        unedited_question=form_data["unedited_question"],
+        edited_question=form_data["edited_question"],
+        answer=form_data["answer"],
+        date=form_data["date"],
+        keywords=form_data["keywords"],
+        topic=form_data["topic"],
+        research=form_data["research"]
         db.session.commit()
 
         return {
             "question": {
                 "id": question.question_id,
-                "topic": question.topic
+                "unedited_question": question.unedited_question,
+                "edited_question": question.edited_question,
+                "answer": question.answer,
+                "date": question.date,
+                "keywords": question.keywords,
+                "topic": question.topic,
+                "research": question.research
             }}, 200
 
     elif request.method == "DELETE":
@@ -93,5 +109,5 @@ def handle_question_id(question_id):
         db.session.commit()
 
         return jsonify({
-            "details": f'Question {question.question_id} "{question.topic}" successfully deleted'
+            "details": f'Question {question.question_id} "{question.topic}" successfully deleted.'
             }), 200

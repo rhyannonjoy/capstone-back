@@ -17,7 +17,7 @@ class Question(db.Model):
                 "unedited_question" : self.unedited_question,
                 "edited_question" : self.edited_question,
                 "answer" : self.answer,
-                "date" : False if self.completed_at == None else True,
+                "date" : self.date,
                 "keywords" : self.keywords,
                 "topic" : self.topic,
                 "research" : self.research
