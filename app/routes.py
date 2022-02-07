@@ -83,13 +83,13 @@ def handle_question_id(question_id):
     if request.method == "PUT":
         form_data = request.get_json()
 
-        unedited_question=form_data["unedited_question"],
-        edited_question=form_data["edited_question"],
-        answer=form_data["answer"],
-        date=form_data["date"],
-        keywords=form_data["keywords"],
-        topic=form_data["topic"],
-        research=form_data["research"]
+        question.unedited_question=form_data["unedited_question"],
+        question.edited_question=form_data["edited_question"],
+        question.answer=form_data["answer"],
+        question.date=form_data["date"],
+        question.keywords=form_data["keywords"],
+        question.topic=form_data["topic"],
+        question.research=form_data["research"]
         db.session.commit()
 
         return {
