@@ -3,19 +3,13 @@ from app.models.question import Question
 from flask import Blueprint, request, jsonify, make_response
 
 
-questions_bp = Blueprint("questions", __name__, url_prefix=("/questions" ))
+questions_bp = Blueprint("questions", __name__, url_prefix="/questions")
 
 
 @questions_bp.route("", methods=["GET"])
 def get_questions():
     if request.method == "GET":
-        request_body = request.get_json()
         sort_query = request.args.get("sort")
-
-        if "unedited_question" not in request_body or request_body["unedited_question"] == "":
-            return jsonify(details="Invalid request, a question is required."), 400
-        if "topic" not in request_body or request_body["topic"] == "":
-            return jsonify(details="Invalid request, a question topic is required."), 400
 
         if sort_query == "desc":
             unedited_question = Question.query.order_by(Question.unedited_question.desc())
@@ -33,9 +27,10 @@ def post_question():
     if request.method == "POST":
         request_body = request.get_json()
 
-        if "unedited_question" not in request_body or "date" not in \
-            request_body or "topic" not in request_body:
-            return jsonify(details="Invalid data."), 400
+        if "unedited_question" not in request_body or request_body["unedited_question"] == "":
+            return jsonify(details="Invalid request, a question is required."), 400
+        if "topic" not in request_body or request_body["topic"] == "":
+            return jsonify(details="Invalid request, a question topic is required."), 400
 
         new_question = Question(
             unedited_question=request_body["unedited_question"],
