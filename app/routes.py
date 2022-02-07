@@ -29,6 +29,8 @@ def post_question():
 
         if "unedited_question" not in request_body or request_body["unedited_question"] == "":
             return jsonify(details="Invalid request, a question is required."), 400
+        if "date" not in request_body or request_body["date"] == "":
+            return jsonify(details="Invalid request, a question date is required."), 400
         if "topic" not in request_body or request_body["topic"] == "":
             return jsonify(details="Invalid request, a question topic is required."), 400
 
