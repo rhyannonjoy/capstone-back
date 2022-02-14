@@ -6,7 +6,7 @@ class Question(db.Model):
     unedited_question = db.Column(db.String)
     edited_question = db.Column(db.String)
     answer = db.Column(db.String)
-    date = db.Column(db.DateTime, nullable=True)
+    date = db.Column(db.String)
     keywords = db.Column(db.String)
     topic = db.Column(db.String)
     research = db.Column(db.String)
